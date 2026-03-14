@@ -3,6 +3,7 @@ import fsExtra from 'fs-extra';
 const { ensureDir, writeJson, pathExists } = fsExtra;
 import { writeFile } from 'fs/promises';
 import * as clack from '@clack/prompts';
+import { checkbox } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { getConfig } from '../utils/config.js';
 import { createVenv, pipInstall } from '../utils/python.js';
@@ -28,25 +29,17 @@ export async function setupCommand(folder: string): Promise<void> {
   }
 
   // TUI: select plugins — all selected by default
-  const pluginChoices = config.plugins.map((p) => ({
-    value: p.name,
-    label: p.name,
-    hint: p.description,
-  }));
-
-  const selectedPlugins = await clack.multiselect<{
-    value: string,
-    label: string,
-    hint: string,
-  }[], unknown>({
+  const selectedPlugins = await checkbox({
     message: 'Select plugins to include (all selected by default — deselect to skip):',
-    options: pluginChoices,
-    // initialValues selects all by default
-    initialValues: config.plugins.map((p) => p.name),
-    required: false,
+    choices: config.plugins.map((p) => ({
+      name: `${p.name} —ai ${p.description}`,
+      value: p.name,
+      checked: true,
+    })),
+    pageSize: 15,
   });
 
-  if (clack.isCancel(selectedPlugins)) {
+  if (!selectedPlugins) {
     clack.cancel('Setup cancelled.');
     process.exit(0);
   }
@@ -104,7 +97,7 @@ export async function setupCommand(folder: string): Promise<void> {
   }
 
   // 4. Clone and install selected plugins into nessie_plugins/
-  const chosen = selectedPlugins as string[];
+  const chosen = selectedPlugins;
   for (const pluginName of chosen) {
     const pluginDef = config.plugins.find((p) => p.name === pluginName);
     if (!pluginDef) continue;
@@ -145,13 +138,4 @@ export async function setupCommand(folder: string): Promise<void> {
   await writeFile(join(projectPath, '.gitignore'), gitignore + '\n');
 
   clack.outro(chalk.green(`✔ Nessie project ready at ${chalk.bold(folder)}`));
-  const isWindows = process.platform === 'win32';
-  const activateCmd = isWindows
-    ? '.venv\\Scripts\\activate'
-    : 'source .venv/bin/activate';
-  clack.outro(
-    chalk.green(
-      `Run ${chalk.bold(`cd ${folder} && ${activateCmd}`)} to activate the virtual environment.`
-    )
-  );
 }

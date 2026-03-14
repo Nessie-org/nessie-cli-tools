@@ -1,6 +1,6 @@
 {
   "name": "@nessie-org/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Nessie project management CLI",
   "type": "module",
   "bin": {
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.7.0",
+    "@inquirer/prompts": "^8.3.0",
     "chalk": "^5.3.0",
     "commander": "^12.0.0",
     "execa": "^8.0.1",
