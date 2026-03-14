@@ -1,5 +1,5 @@
 {
-  "name": "@nessie/cli",
+  "name": "@nessie-org/cli",
   "version": "0.1.0",
   "description": "Nessie project management CLI",
   "type": "module",
