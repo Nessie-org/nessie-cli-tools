@@ -1,17 +1,23 @@
-# @nessie/cli
+# @nessie-org/cli
 
-> 🐉 Nessie project management CLI — TypeScript, Node.js 18+
+> 🐉 Nessie — Python platform project manager
+
+## Requirements
+
+- Node.js 18+
+- Python 3.10+
+- Git
 
 ## Installation
 
 ```bash
-npm install -g @nessie/cli
+npm install -g @nessie-org/cli
 ```
 
-Or with npx (no install):
+To uninstall:
 
 ```bash
-npx @nessie/cli <command>
+npm uninstall -g @nessie-org/cli
 ```
 
 ---
@@ -22,65 +28,79 @@ npx @nessie/cli <command>
 
 Initializes a new Nessie project in the specified folder.
 
-- Creates the project folder and subdirectories (`nessie_plugins/`, `my_plugins/`, `.venv/`)
+- Creates project directories (`core/`, `nessie_plugins/`, `my_plugins/`, `.venv/`)
 - Creates a Python virtual environment
-- Installs `nessie-api` and `nessie-platform` into the venv
-- Launches an interactive TUI to select which official plugins to clone into `nessie_plugins/`
-- Writes a `.nessie/meta.json` marker file and a `.gitignore`
+- Clones and installs `nessie-api` and `nessie-platform` from GitHub into `core/`
+- TUI to select which plugins to clone and install into `nessie_plugins/` (all selected by default)
 
 ```bash
 nessie setup my-project
 ```
 
----
+Generated structure:
 
-### `nessie start <server>`
-
-Clones the server project (if it doesn't already exist) and starts it.
-
-Available servers are defined in `src/config/nessie.config.json`.
-
-```bash
-nessie start fastapi
-nessie start flask
-nessie start django
+```
+my-project/
+├── .nessie/
+│   └── meta.json
+├── .venv/
+├── core/
+│   ├── nessie-api/
+│   └── nessie-platform/
+├── nessie_plugins/
+├── my_plugins/
+└── .gitignore
 ```
 
 ---
 
-### `nessie plugin new <plugin_name>`
+### `nessie start [server]`
 
-Scaffolds a new plugin in the `my_plugins/` folder with an interactive TUI to select the plugin type.
-
-**Plugin types:** `service`, `middleware`, `handler`, `storage`, `auth`
+Clones the server project (if it doesn't already exist) and starts it. If no server is specified, an interactive TUI selector is shown.
 
 ```bash
-nessie plugin new my-awesome-plugin
+nessie start           # TUI selector
+nessie start fastapi   # skip TUI
+```
+
+---
+
+### `nessie new <plugin_name>`
+
+Scaffolds a new plugin in `my_plugins/` using templates fetched from `github.com/Nessie-org/nessie-templates`. Templates are cached in `~/.nessie/templates` and auto-updated on each run. An interactive TUI lets you select the plugin type.
+
+```bash
+nessie new my-auth-plugin
 ```
 
 Generated structure:
 
 ```
 my_plugins/
-└── my-awesome-plugin/
-    ├── my_awesome_plugin/
+└── my-auth-plugin/
+    ├── my_auth_plugin/
     │   ├── __init__.py
     │   └── plugin.py
     ├── setup.py
     └── README.md
 ```
 
+Template placeholders replaced at scaffold time:
+
+| Placeholder | Example |
+|---|---|
+| `{{plugin_name}}` | `my-auth-plugin` |
+| `{{python_plugin_name}}` | `my_auth_plugin` |
+
 ---
 
-### `nessie plugin list`
+### `nessie list`
 
-Lists all plugins — both available (on disk) and installed (in the venv).
+Lists all plugins — both available on disk and installed in the venv.
 
 ```bash
-nessie plugin list
+nessie list
 ```
-
-Output example:
 
 ```
 🔌 Nessie Plugins
@@ -90,105 +110,50 @@ nessie_plugins/
   nessie-cache     [not installed]
 
 my_plugins/
-  my-awesome-plugin  [not installed]
+  my-auth-plugin   [not installed]
 ```
 
 ---
 
-### `nessie plugin install <plugin_name>`
+### `nessie install <plugin_name>`
 
-Installs a plugin using `pip install -e <path>`.
-
-1. Checks `my_plugins/` first
-2. Falls back to `nessie_plugins/`
-3. Errors if not found in either
+Installs a plugin using `pip install -e`. Checks `my_plugins/` first, then `nessie_plugins/`.
 
 ```bash
-nessie plugin install my-awesome-plugin
-nessie plugin install nessie-auth
+nessie install my-auth-plugin
+nessie install nessie-auth
 ```
 
 ---
 
-### `nessie plugin remove <plugin_name>`
+### `nessie remove <plugin_name>`
 
 Uninstalls an installed plugin from the venv.
 
 ```bash
-nessie plugin remove my-awesome-plugin
+nessie remove my-auth-plugin
 ```
 
 ---
 
-### `nessie plugin download <github_repo_url>`
+### `nessie download <github_repo_url>`
 
-Clones a plugin from GitHub.
-
-- URLs from `github.com/Nessie-org` → cloned into `nessie_plugins/`
-- All other URLs → cloned into `my_plugins/`
+Downloads a plugin from GitHub. URLs from `github.com/Nessie-org` go into `nessie_plugins/`, everything else goes into `my_plugins/`.
 
 ```bash
-# Official plugin → goes to nessie_plugins/
-nessie plugin download https://github.com/Nessie-org/nessie-auth
+# Official plugin → nessie_plugins/
+nessie download https://github.com/Nessie-org/nessie-auth
 
-# Third-party plugin → goes to my_plugins/
-nessie plugin download https://github.com/someone/cool-plugin
+# Third-party plugin → my_plugins/
+nessie download https://github.com/someone/cool-plugin
 ```
 
 ---
 
-## Development
+### `nessie help`
+
+Prints all available commands, servers, and plugin types.
 
 ```bash
-# Install dependencies
-npm install
-
-# Run in dev mode (no build required)
-npm run dev -- setup my-project
-
-# Build
-npm run build
-
-# Run built CLI
-node dist/index.js setup my-project
-```
-
----
-
-## Configuration
-
-All plugins, servers, and plugin types are defined in:
-
-```
-src/config/nessie.config.json
-```
-
-You can add new plugins, servers, or plugin types by editing this file and rebuilding.
-
----
-
-## Project Structure
-
-```
-src/
-├── index.ts                  # CLI entry point (Commander wiring)
-├── config/
-│   └── nessie.config.json    # Plugins, servers, plugin types registry
-├── commands/
-│   ├── setup.ts              # nessie setup
-│   ├── start.ts              # nessie start
-│   └── plugin/
-│       ├── new.ts            # nessie plugin new
-│       ├── list.ts           # nessie plugin list
-│       ├── install.ts        # nessie plugin install
-│       ├── remove.ts         # nessie plugin remove
-│       └── download.ts       # nessie plugin download
-├── utils/
-│   ├── config.ts             # Config loader
-│   ├── git.ts                # Git clone helpers
-│   ├── logger.ts             # Chalk-based logger
-│   ├── project.ts            # Project root detection
-│   └── python.ts             # Venv / pip / python helpers
-└── types/
-    └── index.ts              # Shared TypeScript types
+nessie help
 ```

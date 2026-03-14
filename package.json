@@ -1,10 +1,10 @@
 {
   "name": "@nessie-org/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Nessie project management CLI",
   "type": "module",
   "bin": {
-    "nessie": "./dist/index.js"
+    "nessie": "dist/index.js"
   },
   "scripts": {
     "build": "tsc && mkdir -p dist/config && cp src/config/nessie.config.json dist/config/nessie.config.json",
