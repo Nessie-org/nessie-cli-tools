@@ -1,0 +1,80 @@
+{
+  "nessie_plugins_prefix": "github.com/Nessie-org",
+  "templates_repo": "https://github.com/Nessie-org/nessie-plugin-templates",
+  "packages": {
+    "nessie_api": {
+      "pip_name": "nessie-api",
+      "repo": "https://github.com/Nessie-org/nessie-api"
+    },
+    "nessie_platform": {
+      "pip_name": "nessie-platform",
+      "repo": "https://github.com/Nessie-org/Nessie"
+    }
+  },
+  "plugins": [
+    {
+      "name": "nessie-web",
+      "description": "Web ui rendering plugin",
+      "repo": "https://github.com/Nessie-org/nessie-web"
+    },
+    {
+      "name": "nessie-simple-visualizer-plugin",
+      "description": "A simple plugin that visualizes data in a web interface",
+      "repo": "https://github.com/Nessie-org/nessie-simple-visualizer-plugin"
+    },
+    {
+      "name": "neisse-graph-visualiser-block",
+      "description": "Visualiser plugin for rendering graphs in a web interface using the visualiser block",
+      "repo": "https://github.com/Nessie-org/neisse-graph-visualiser-block"
+    },
+    {
+      "name": "nessie-npm-dependencies-plugin",
+      "description": "NPM dependencies management plugin",
+      "repo": "https://github.com/Nessie-org/nessie-npm-dependencies-plugin"
+    },
+    {
+      "name": "nessie-relationaldb-datasource-plugin",
+      "description": "Datasource plugin for parsing relational databases and visualising their structure",
+      "repo": "https://github.com/Nessie-org/nessie-relationaldb-datasource-plugin"
+    },
+    {
+      "name": "nessie-python-datasource-plugin",
+      "description": "Datasource plugin for parsing python modules and visualising their structure",
+      "repo": "https://github.com/Nessie-org/nessie-python-datasource-plugin"
+    },
+    {
+      "name": "nessie-graph-manipulation-plugin",
+      "description": "Plugin for manipulating graphs",
+      "repo": "https://github.com/Nessie-org/nessie-graph-manipulation-plugin"
+    },
+    {
+      "name": "nessie-cli",
+      "description": "Command line interface for Nessie",
+      "repo": "https://github.com/Nessie-org/nessie-cli"
+    }
+  ],
+  "servers": [
+    {
+      "name": "flask",
+      "description": "Flask web server",
+      "repo": "https://github.com/Nessie-org/flask-web-nessie"
+    },
+    {
+      "name": "django",
+      "description": "Django web server",
+      "repo": "https://github.com/Nessie-org/django-web-nessie"
+    }
+  ],
+  "plugin_types": [
+    {
+      "name": "visualiser",
+      "description": "A visualiser plugin",
+      "template": "visualiser"
+    },
+    {
+      "name": "datasource",
+      "description": "A datasource plugin",
+      "template": "datasource"
+    }
+  ]
+}
